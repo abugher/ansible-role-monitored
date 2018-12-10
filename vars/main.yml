@@ -8,7 +8,7 @@ install_packages:
   - 'socat'
 authorized_keys:
   - user:               'nagios'
-    keyfile:            "{{ role_path }}/../synapse/files/ssh_keys/nagios.id_rsa.pub"
+    keyfile:            "{{ role_path }}/../../inventory/hosts/synapse/users/nagios/files/ssh_keys/id_rsa.pub"
 create_files:
   - owner:              'root'
     group:              'root'

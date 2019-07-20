@@ -41,9 +41,32 @@ install_files:
     mode:               '0755'
     src:                'files/agent_modules/ping'
     dest:               '/usr/local/lib/agent_modules/ping'
+  - owner:              'root'
+    group:              'root'
+    mode:               '0755'
+    src:                "{{ role_path }}/files/init.d/watchdog"
+    dest:               '/etc/init.d/watchdog'
+  - owner:              'root'
+    group:              'root'
+    mode:               '0755'
+    src:                "{{ role_path }}/files/bin/watchdog"
+    dest:               '/usr/local/bin/watchdog'
 enable_services:
   - 'agent'
+  - 'watchdog'
+start_services:
+  - 'watchdog'
+initialize_files:
+  - owner:              'nagios'
+    group:              'nagios'
+    mode:               '0644'
+    dest:               '/var/log/watchdog.log'
+  - owner:              'nagios'
+    group:              'nagios'
+    mode:               '0644'
+    dest:               '/var/log/watchdog.log.old'
 restart_services:
   - 'agent'
+  - 'watchdog'
 allow_users:
   - 'nagios'

@@ -2,7 +2,7 @@
 
 while true; do
   date --iso-8601=seconds
-  service nagios3 status
+  ps -elf
   date --iso-8601=seconds
   echo '----'
   sleep 60

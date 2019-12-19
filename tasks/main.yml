@@ -5,7 +5,6 @@
 - include:              '../tasks/authorized_keys.yml'
 - include:              '../tasks/create_files.yml'
 - include:              '../tasks/install_files.yml'
-- include:              '../tasks/initialize_files.yml'
 - include:              '../tasks/enable_services.yml'
 - include:              '../tasks/restart_services.yml'
   when:                 install_files_result.changed

@@ -11,6 +11,7 @@ critical_high=70
 
 # Other settings.
 interval=1
+shopt -s nullglob
 
 function main() {
   cd /sys/class/thermal/
@@ -41,10 +42,20 @@ function main() {
   for zi in "${zone_indices[@]}"; do
     read -a temps <<< "${zone_temps[${zi}]}"
     average=0
+    unchanging=1
+    temp_raw_old="${temps[0]}"
     for temp_raw in "${temps[@]}"; do
+      if ! test "${temp_raw_old}" = "${temp_raw}"; then
+        unchanging=0
+      fi
+      temp_raw_old="${temp_raw}"
       average=$(( average + temp_raw ))
     done
     average="$(bc <<< "scale=0; ${average} / ${#temps[@]} / 1000")"
+    if test 1 = "${unchanging}"; then
+      # Replace obviously fake data with fake data that won't alert.
+      average="$(( warning_high - 1 ))"
+    fi
     if test "${average}" -ge "${critical_high}"; then critical; fi
     if test "${average}" -le "${critical_low}"; then critical; fi
     if test "${average}" -ge "${warning_high}"; then warning; fi

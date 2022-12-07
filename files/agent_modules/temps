@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Global.
+ret=0
+
+# These are probably worth alerting on.  More cautious numbers would probably be machine specific.
+critical_low=10
+warning_low=20
+warning_high=60
+critical_high=70
+
+# Other settings.
+interval=1
+
+function main() {
+  cd /sys/class/thermal/
+
+  # zone_temps is an array of strings; each string is a space separated series of temperatures.
+  unset zone_temps
+  zone_temps=()
+  zone_averages=()
+  zone_indices=()
+
+  # Enumerate zone_temps.
+  for zone in thermal_zone*; do
+    i="$(sed 's/^thermal_zone//' <<< "${zone}")"
+    zone_temps["${i}"]=''
+    zone_indices+=( "${i}" )
+  done
+
+  # Take temperature samples.
+  for ti in {1..10}; do
+    sleep "${interval}"
+    for zi in "${zone_indices[@]}"; do
+      zone="thermal_zone${zi}"
+      zone_temps["${zi}"]="${zone_temps[${zi}]} $(cat "${zone}/temp")"
+    done
+  done
+
+  # Take averages.
+  for zi in "${zone_indices[@]}"; do
+    read -a temps <<< "${zone_temps[${zi}]}"
+    average=0
+    for temp_raw in "${temps[@]}"; do
+      average=$(( average + temp_raw ))
+    done
+    average="$(bc <<< "scale=0; ${average} / ${#temps[@]} / 1000")"
+    if test "${average}" -ge "${critical_high}"; then critical; fi
+    if test "${average}" -le "${critical_low}"; then critical; fi
+    if test "${average}" -ge "${warning_high}"; then warning; fi
+    if test "${average}" -le "${warning_low}"; then warning; fi
+    zone_averages["${zi}"]="${average}"
+  done
+
+  # Print the return value first.
+  printf '%s ' "${ret}"
+
+  # Print the remaining message second.
+  for zi in "${zone_indices[@]}"; do
+    printf 'Zone %s:  %s°C;  ' "${zi}" "${zone_averages[${zi}]}"
+  done
+  printf '\n'
+
+  # Return the appropriate value.
+  return "${ret}"
+}
+
+
+function critical() {
+  ret=2
+}
+
+
+function warning() {
+  if test 2 = "${ret}"; then
+    return 0
+  else
+    ret=1
+  fi
+}
+
+
+main

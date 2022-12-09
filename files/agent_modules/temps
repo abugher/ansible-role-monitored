@@ -17,8 +17,9 @@ function main() {
   cd /sys/class/thermal/
 
   # zone_temps is an array of strings; each string is a space separated series of temperatures.
-  unset zone_temps
   zone_temps=()
+  # zone_types is an array of strings; each string is a label for a sequence of temperatures.
+  zone_types=()
   zone_averages=()
   zone_indices=()
 
@@ -26,6 +27,7 @@ function main() {
   for zone in thermal_zone*; do
     i="$(sed 's/^thermal_zone//' <<< "${zone}")"
     zone_temps["${i}"]=''
+    zone_types["${i}"]="$(cat "${zone}/type")"
     zone_indices+=( "${i}" )
   done
 
@@ -68,7 +70,7 @@ function main() {
 
   # Print the remaining message second.
   for zi in "${zone_indices[@]}"; do
-    printf 'Zone %s:  %s°C;  ' "${zi}" "${zone_averages[${zi}]}"
+    printf 'Zone %s (%s):  %s°C;  ' "${zi}" "${zone_types[${zi}]}" "${zone_averages[${zi}]}"
   done
   printf '\n'
 

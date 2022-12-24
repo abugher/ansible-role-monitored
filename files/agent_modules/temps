@@ -5,7 +5,7 @@ ret=0
 
 # These are probably worth alerting on.  More cautious numbers would probably be machine specific.
 critical_low=10
-warning_low=20
+warning_low=15
 warning_high=70
 critical_high=80
 

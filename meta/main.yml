@@ -1,4 +1,0 @@
----
-dependencies:
-  - role:       'time'
-    when:       skipdeps is not defined

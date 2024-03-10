@@ -1,6 +1,4 @@
 ---
-dependencies:
-  - 'time'
 user_groups:
   - 'nagios'
 system_users:

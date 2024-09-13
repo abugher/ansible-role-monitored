@@ -20,16 +20,13 @@ create_files:
     mode:               '0755'
     state:              'directory'
     path:               '/usr/local/lib/agent_modules'
-  - owner:              'nagios'
-    group:              'nagios'
-    mode:               '0644'
-    state:              'touch'
-    path:               '/var/log/watchdog.log'
-  - owner:              'nagios'
-    group:              'nagios'
-    mode:               '0644'
-    state:              'touch'
-    path:               '/var/log/watchdog.log.old'
+remove_files:
+  - '/var/log/watchdog.log'
+  - '/var/log/watchdog.log.old'
+  - '/var/log.hdd/watchdog.log'
+  - '/var/log.hdd/watchdog.log.old'
+  - '/usr/local/bin/watchdog'
+  - '/etc/init.d/watchdog'
 install_files:
   - owner:              'root'
     group:              'root'
@@ -56,23 +53,11 @@ install_files:
     mode:               '0755'
     src:                'files/agent_modules/temps'
     dest:               '/usr/local/lib/agent_modules/temps'
-  - owner:              'root'
-    group:              'root'
-    mode:               '0755'
-    src:                "{{ role_path }}/files/init.d/watchdog"
-    dest:               '/etc/init.d/watchdog'
-  - owner:              'root'
-    group:              'root'
-    mode:               '0755'
-    src:                "{{ role_path }}/files/bin/watchdog"
-    dest:               '/usr/local/bin/watchdog'
 enable_services:
   - 'agent'
-  - 'watchdog'
 start_services:
-  - 'watchdog'
+  - 'agent'
 restart_services:
   - 'agent'
-  - 'watchdog'
 allow_users:
   - 'nagios'

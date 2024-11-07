@@ -3,3 +3,7 @@ dependencies:
   - role:     'time'
     tags:     
       - 'dependency'
+  # If it's going to alert, the responder deserves a reasonable shell.
+  - role:     'user-friendly'
+    tags:     
+      - 'dependency'
